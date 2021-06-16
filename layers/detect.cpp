@@ -29,13 +29,14 @@ struct Detect : torch::nn::Module {
         register_module("m1", m1);
         inplace_ = inplace;
     }
-
+    
     torch::Tensor forward(torch::Tensor x) {
         int i = 0;
-        for (auto ) {
-            x[i] = m1[i]->forward(x[i]);
+        for (auto proc : m1) {
+            x[i] = proc->forward(x[i]);
             auto sharp = x[i].shape();
             x[i] = x[i].view(sharp[0], na_, no_, sharp[2], sharp[3]).permute({0, 1, 3, 4, 2}).contiguous();
+            i ++;
         }
        return x;
     }

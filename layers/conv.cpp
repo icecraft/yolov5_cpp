@@ -13,7 +13,7 @@ struct Conv : torch::nn::Module {
             torch::ExpandingArray<2> stride,
             torch::ExpandingArray<2> padding,
             torch::ExpandingArray<2> dilation,
-            int64_t groups;
+            int64_t groups,
             bool bias) {
         conv1 = torch::nn:Conv2d(torch::nn::Conv2dOptions(input_channels, output_channels, kernel_size).
                                 stride(stride).

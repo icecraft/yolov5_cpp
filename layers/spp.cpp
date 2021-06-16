@@ -10,12 +10,9 @@ struct SPP : torch::nn::Module {
     SPP (int64_t input_channels, int64_t output_channels, int64_t kernels[] ,int kernel_nums) {
         int64_t hidden = input_channels / 2;
 
-        conv1 = torch::nn:Conv2d(torch::nn::Conv2dOptions(input_channels, hidden, (1, 1)).
-                                stride((1, 1)).
-                                bias(false));
-        conv2 = torch::nn:Conv2d(torch::nn::Conv2dOptions(hidden, output_channels, (1, 1)).
-                                stride((1, 1)).
-                                bias(false));
+        conv1 = &Conv(input_channels, hidden, kernel_size, stride, padding, dilation, groups, bias);
+        conv2 = &Conv((kernel_nums+1)*hidden, output_channels, kernel_size, stride, padding, dilation, groups, bias);
+
         m1 = torch::nn::ModuleList();
 
         for (int i = 0 ;i < kernel_size; i++) {
@@ -29,10 +26,15 @@ struct SPP : torch::nn::Module {
         register_module("m1", m1);
     }
 
-    // 假定只有 3 个，必要时手动修改吧
+    //TODO: 假定只有 3 个，必要时手动修改吧。 more elegant
     torch::Tensor forward(torch::Tensor x) {
         x = conv1->forward(x);
-        x = torch::cat({x, m[1]->forward(x), m[2]->forward(x), m[3]->forward(x)}, 1)
+        vector<torch::Tensor> arr;
+
+        for (auto proc : m1) {
+            arr.push_back(proc->forward(x));
+        }
+        x = torch::cat({x, arr[0], arr[1], arr[2]}, 1);
         x = conv2->forward(x);
         return x;
     }

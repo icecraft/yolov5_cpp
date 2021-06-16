@@ -1,0 +1,7 @@
+*~
+__pycache__
+layers.txt
+layers.progress.txt
+resources
+source.dev.env
+venv

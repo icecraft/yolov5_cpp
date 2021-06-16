@@ -14,16 +14,10 @@ struct Focus : torch::nn::Module {
             torch::ExpandingArray<2> stride,
             torch::ExpandingArray<2> padding,
             torch::ExpandingArray<2> dilation,
-            int64_t groups;
+            int64_t groups,
             bool bias) {
-        conv1 = torch::nn:Conv2d(torch::nn::Conv2dOptions(input_channels*4, output_channels, kernel_size).
-                                stride(stride).
-                                padding(padding).
-                                dilation(dilation).
-                                groups(groups).
-                                bias(bias));
+        conv1 = &Conv(input_channels, hidden, kernel_size, stride, padding, dilation, groups, bias);
         register_module("conv1", conv1);
-
     }
 
     torch::Tensor forward(torch::Tensor x) {

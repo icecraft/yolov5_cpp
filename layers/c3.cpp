@@ -6,21 +6,21 @@
 #include <string>
 #include <vector>
 
+//TODO：fix layer c3 error
 struct C3 : torch::nn::Module {
-    C3 (int64_t input_channels, int64_t output_channels, int n, bool shortcut, int g, float eps) {
+    C3 (int64_t input_channels, int64_t output_channels, 
+        torch::ExpandingArray<2> kernel_size, 
+        torch::ExpandingArray<2> stride,
+        torch::ExpandingArray<2> padding,
+        torch::ExpandingArray<2> dilation,
+        int64_t groups,
+        bool bias,
+        int n, bool shortcut, int g, float eps) {
         int64_t hidden = int(output_channels * eps);
 
-        conv1 = torch::nn:Conv2d(torch::nn::Conv2dOptions(input_channels, hidden, (1, 1)).
-                                stride((1, 1)).
-                                bias(false));
-
-        conv2 = torch::nn:Conv2d(torch::nn::Conv2dOptions(input_channels, hidden, (1, 1)).
-                        stride((1, 1)).
-                        bias(false));
-                   
-        conv3 = torch::nn:Conv2d(torch::nn::Conv2dOptions(2 * hidden, output_channels, (1, 1)).
-                        stride((1, 1)).
-                        bias(false));
+        conv1 = &Conv(input_channels, hidden, kernel_size, stride, padding, dilation, groups, bias);
+        conv2 = &Conv(input_channels, hidden, kernel_size, stride, padding, dilation, groups, bias);
+        conv3 = &Conv(2 * hidden, output_channels, kernel_size, stride, padding, dilation, groups, bias);
 
         seq1 = torch::nn::Sequential{}
 
