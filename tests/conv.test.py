@@ -12,8 +12,8 @@ env = jinja2.Environment(loader=file_loader)
 register(env)
 
 def test_conv():
-    template = env.get_template('conv.cpp.tpl')
-    out = template.render(in_channels=10, out_channels=20, kernel_size=(3, 4), padding=(1, 2), bias=False, stride=1)
+    template = env.get_template('Conv.new.tpl')
+    out = template.render(input_channels=10, output_channels=20, kernel_size=[3, 4], padding=[1, 2], bias=False, stride=1)
     print(out)
 
 
