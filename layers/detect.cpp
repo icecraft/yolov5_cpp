@@ -7,15 +7,15 @@
 #include <vector>
 
 struct Detect : torch::nn::Module {
-    Detect(int nc, int[][6] anchor, int anchor_n, bool inplace) {
+    Detect(int nc, int nl, int[] anchor, int anchor_len,  bool inplace) {
         nc_ = nc;
         no_ = nc + 5;
-        nl_ = anchor_n;
-        na_ = 4;  // 写死的
+        nl_ = nl;
+        na_ = 3;  // 写死的
         for ( int i =0; i < nl; i++) {
             grid.push_back(torch::zeors(1));
         }
-        auto a = torch::from_blob(anchor,{2,2},torch::kFloat32).view({nl_, -1, 2});
+        auto a = torch::from_blob(anchor,{anchor_len},torch::kFloat32).view({nl_, -1, 2});
         register_buffer("anchors", a);
         register_buffer("anchor_grid", a.clone().view({nl_, 1, -1, 1, 1, 2});
 

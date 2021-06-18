@@ -6,18 +6,29 @@
 #include <string>
 #include <vector>
 
+
 struct Bottleneck : torch::nn::Module {
     Bottleneck (int64_t input_channels, int64_t output_channels, bool shortcut, int g, float eps) {
-        int64_t hidden = int(output_channels * e);
+        int64_t hidden = int(output_channels * eps);
 
-        conv1 = torch::nn:Conv2d(torch::nn::Conv2dOptions(input_channels, hidden, (1, 1)).
-                                stride((1, 1)).
-                                bias(false));
-        conv2 = torch::nn:Conv2d(torch::nn::Conv2dOptions(hidden, output_channels, (1, 1)).
-                                stride((1, 1)).
-                                bias(false));
-    
-        if (hidden == output_channels) && (hidden == input_channels) && shortcut {
+        conv1 = &Conv(input_channels, hidden, 
+                    torch::ExpandingArray<2>({1, 1}),
+                    torch::ExpandingArray<2>({1, 1}),
+                    torch::ExpandingArray<2>({0, 0}),
+                    torch::ExpandingArray<2>({1, 1}),
+                    1, 
+                    false
+                    );
+        conv1 = &Conv(input_channels, hidden, 
+                    torch::ExpandingArray<2>({3, 3}),
+                    torch::ExpandingArray<2>({1, 1}),
+                    torch::ExpandingArray<2>({1, 1}),
+                    torch::ExpandingArray<2>({1, 1}),
+                    1, 
+                    false
+                    );
+
+        if (shortcut && input_channels == output_channels) {
             pAdd = true;
         }
 

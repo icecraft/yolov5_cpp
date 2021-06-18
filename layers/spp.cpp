@@ -7,7 +7,15 @@
 #include <vector>
 
 struct SPP : torch::nn::Module {
-    SPP (int64_t input_channels, int64_t output_channels, int64_t kernels[] ,int kernel_nums) {
+    SPP (int64_t input_channels, int64_t output_channels,
+            torch::ExpandingArray<2> kernel_size, 
+            torch::ExpandingArray<2> stride,
+            torch::ExpandingArray<2> padding,
+            torch::ExpandingArray<2> dilation,
+            int64_t groups,
+            bool bias,
+            vector<int> pool_kernel_size) 
+     {
         int64_t hidden = input_channels / 2;
 
         conv1 = &Conv(input_channels, hidden, kernel_size, stride, padding, dilation, groups, bias);
@@ -15,8 +23,7 @@ struct SPP : torch::nn::Module {
 
         m1 = torch::nn::ModuleList();
 
-        for (int i = 0 ;i < kernel_size; i++) {
-            int x = kernels[i];
+        for (auto x: pool_kernel_size) {
             pool = torch::nn::MaxPool2dOptions(x).stride(1).padding(x/2);
             m1.push_back(pool);
         }
