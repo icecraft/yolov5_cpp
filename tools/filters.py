@@ -1,32 +1,22 @@
 from functools import partial
 import jinja2
 
-def expand_withname(name, args):
-   if isinstance(args, jinja2.runtime.Undefined):
-       return ''
-   if isinstance(args, int):
-       return '.{}({})'.format(name, args)
-   return '.{}({})'.format(name, ', '.join(map(str, args)))
 
+# suppose it is array
+def torch_expanding_array(args):
+    return str(args).replace('[', '{').replace(']', '}')
 
-def just_expand(args):
-   if isinstance(args, int):
-       return '{}'.format(args)
-   return  ', '.join(map(str, args))
+def cpp_vector_expand(args):
+    return str(args).replace('[', '{').replace(']', '}')
 
-
-def bool_(args):
-    return 'true' if args else 'false'
 
 def check_add(env, name, func):
     if name in env.filters:
         raise Exception('duplicate name filters')
     env.filters[name] = func
-
-
+    
 def register(env):    
-    check_add(env, 'padding', partial(expand_withname, 'padding'))
-    check_add(env, 'stride', partial(expand_withname, 'stride'))
-    check_add(env, 'groups', partial(expand_withname, 'groups'))
-    check_add(env, 'expand_arr_int', just_expand)
-    check_add(env, 'bool', bool_)
+    check_add(env, 'torch_expanding_array', torch_expanding_array)
+    check_add(env, 'cpp_vector_expand', cpp_vector_expand)
+    
+

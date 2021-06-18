@@ -84,8 +84,8 @@ class RC3(Rbase):
     
         n = len(self.c3.m)
         eps = out_channels/in_channels
-        shortcut = c3.m[0].add
-        groups =  c3.m[0].cv2.conv.groups
+        shortcut = self.c3.m[0].add
+        groups =  self.c3.m[0].cv2.conv.groups
 
 
 class RSPP(Rbase):
@@ -105,7 +105,7 @@ class RSPP(Rbase):
         dilation = conv.conv.dilation
         group = conv.conv.group
         
-        k = [k.kernel_size for k in spp.m]
+        k = [k.kernel_size for k in self.spp.m]
 
 
 class RConcat(Rbase):
@@ -126,7 +126,7 @@ class RDetect(Rbase):
         nl_= self.detect.nl
         na = self.detect.na
         
-        anchors = [v.item() for v in self.detect.anchors.view(-1)
+        anchors = [v.item() for v in self.detect.anchors.view(-1)]
 
 
 class Model(object):
