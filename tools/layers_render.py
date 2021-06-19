@@ -29,24 +29,32 @@ class Rbase(metaclass=Registry):
     
     def get_tpl_name(self):
         tpl_file_name = "{}.new.tpl".format(self.__class__.__name__[1:])
-    
+        
+    def render(self, env, fobj):
+        template = env.get_template(self.get_tpl_name())
+        ret = template.render(**self._render)
+        fobj.write(ret)
+        fobj.flush()
+        
 
 class RFocus(Rbase):
     
     def __init__(self, layer):
         self.focus = layer
         
-    def render(self):
+    def _render(self):
         conv = self.focus.conv
+        d = {}
+        d['in_channels'] = conv.conv.in_channels
+        d['out_channels'] = conv.conv.out_channels
+        d['kernel_size'] = conv.conv.kernel_size
+        d['stride'] = conv.conv.stride
+        d['padding'] = conv.conv.padding
+        d['bias'] = conv.conv.bias
+        d['dilation'] = conv.conv.dilation
+        d['group'] = conv.conv.group
+        return d
         
-        in_channels = conv.conv.in_channels
-        out_channels = conv.conv.out_channels
-        kernel_size = conv.conv.kernel_size
-        stride = conv.conv.stride
-        padding = conv.conv.padding
-        bias = conv.conv.bias
-        dilation = conv.conv.dilation
-        group = conv.conv.group
         
 
 class RConv(Rbase):
@@ -56,14 +64,16 @@ class RConv(Rbase):
     def render(self):
         conv = self.conv 
         
-        in_channels = conv.conv.in_channels
-        out_channels = conv.conv.out_channels
-        kernel_size = conv.conv.kernel_size
-        stride = conv.conv.stride
-        padding = conv.conv.padding
-        bias = conv.conv.bias
-        dilation = conv.conv.dilation
-        group = conv.conv.group
+        d = {}
+        d['in_channels'] = conv.conv.in_channels
+        d['out_channels'] = conv.conv.out_channels
+        d['kernel_size'] = conv.conv.kernel_size
+        d['stride'] = conv.conv.stride
+        d['padding'] = conv.conv.padding
+        d['bias'] = conv.conv.bias
+        d['dilation'] = conv.conv.dilation
+        d['group'] = conv.conv.group
+        return d
 
 
 class RC3(Rbase):
@@ -73,19 +83,21 @@ class RC3(Rbase):
     def render(self):
         conv = self.c3.cv1
         
-        in_channels = conv.conv.in_channels
-        out_channels = conv.conv.out_channels
-        kernel_size = conv.conv.kernel_size
-        stride = conv.conv.stride
-        padding = conv.conv.padding
-        bias = conv.conv.bias
-        dilation = conv.conv.dilation
-        group = conv.conv.group
+        d = {}
+        d['in_channels'] = conv.conv.in_channels
+        d['out_channels'] = conv.conv.out_channels
+        d['kernel_size'] = conv.conv.kernel_size
+        d['stride'] = conv.conv.stride
+        d['padding'] = conv.conv.padding
+        d['bias'] = conv.conv.bias
+        d['dilation'] = conv.conv.dilation
+        d['groups'] = conv.conv.groups
     
-        n = len(self.c3.m)
-        eps = out_channels/in_channels
-        shortcut = self.c3.m[0].add
-        groups =  self.c3.m[0].cv2.conv.groups
+        d['n'] = len(self.c3.m)
+        d['eps'] = out_channels/in_channels
+        d['shortcut'] = self.c3.m[0].add
+        d['groups2'] =  self.c3.m[0].cv2.conv.groups
+        return d
 
 
 class RSPP(Rbase):
@@ -93,19 +105,20 @@ class RSPP(Rbase):
         self.spp = layer
     
     def render(self):
-        
         conv = self.spp.cv1
+        d = {}
         
-        in_channels = conv.conv.in_channels
-        out_channels = conv.conv.out_channels
-        kernel_size = conv.conv.kernel_size
-        stride = conv.conv.stride
-        padding = conv.conv.padding
-        bias = conv.conv.bias
-        dilation = conv.conv.dilation
-        group = conv.conv.group
+        d['in_channels'] = conv.conv.in_channels
+        d['out_channels'] = conv.conv.out_channels
+        d['kernel_size'] = conv.conv.kernel_size
+        d['stride'] = conv.conv.stride
+        d['padding'] = conv.conv.padding
+        d['bias'] = conv.conv.bias
+        d['dilation'] = conv.conv.dilation
+        d['group'] = conv.conv.group
         
-        k = [k.kernel_size for k in self.spp.m]
+        d['pool_kernel_size'] = [k.kernel_size for k in self.spp.m]
+        return d
 
 
 class RConcat(Rbase):
@@ -113,7 +126,9 @@ class RConcat(Rbase):
         self.concat = layer
     
     def render(self):
-        dimension = self.concat.d 
+        d = {}
+        d['dimension'] = self.concat.d 
+        return d
 
 
 class RDetect(Rbase):
@@ -121,12 +136,17 @@ class RDetect(Rbase):
         self.detect = layer
         
     def render(self):
-        nc = self.detect.nc
-        no = self.detect.no
-        nl_= self.detect.nl
-        na = self.detect.na
+        d = {}
         
-        anchors = [v.item() for v in self.detect.anchors.view(-1)]
+        d['nc'] = self.detect.nc
+        d['no'] = self.detect.no
+        d['nl'] = self.detect.nl
+        d['na'] = self.detect.na
+        d['anchor'] = [v.item() for v in self.detect.anchors.view(-1)]
+        d['anchor_len'] = len(self.detect.anchors.view(-1))
+        d['inplace'] = self.detect.inplace
+        
+        return d
 
 
 class Model(object):

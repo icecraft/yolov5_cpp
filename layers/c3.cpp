@@ -6,7 +6,7 @@
 #include <string>
 #include <vector>
 
-//TODO：fix layer c3 error
+
 struct C3 : torch::nn::Module {
     C3 (int64_t input_channels, int64_t output_channels, 
         torch::ExpandingArray<2> kernel_size, 
@@ -15,7 +15,7 @@ struct C3 : torch::nn::Module {
         torch::ExpandingArray<2> dilation,
         int64_t groups,
         bool bias,
-        int n, bool shortcut, int g, float eps) {
+        int n, bool shortcut, int64_t groups2, float eps) {
         int64_t hidden = int(output_channels * eps);
 
         conv1 = &Conv(input_channels, hidden, kernel_size, stride, padding, dilation, groups, bias);
@@ -25,7 +25,7 @@ struct C3 : torch::nn::Module {
         seq1 = torch::nn::Sequential{}
 
         for (int i = 0 ;i < n; i++) {
-            bottleneck = Bottleneck(hidden, hidden, shortcut, g, eps);
+            bottleneck = Bottleneck(hidden, hidden, shortcut, groups2, eps);
             seq1.push_back(bottleneck);
         }
 

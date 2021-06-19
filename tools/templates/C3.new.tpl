@@ -9,7 +9,7 @@
                         {{ bias}},
                         {{ n }},
                         {{ shortcut }},
-                        {{ g}},
+                        {{ groups2 }},
                         {{ eps }}
                       );
                       

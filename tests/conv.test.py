@@ -14,7 +14,7 @@ register(env)
 def test_conv():
     template = env.get_template('Conv.new.tpl')
     out = template.render(input_channels=10, output_channels=20, kernel_size=[3, 4], padding=[1, 2], bias=False, stride=1)
-    print(out)
+    print(type(out))
 
 
 if __name__ == '__main__':  

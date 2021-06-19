@@ -8,7 +8,7 @@
 
 
 struct Bottleneck : torch::nn::Module {
-    Bottleneck (int64_t input_channels, int64_t output_channels, bool shortcut, int g, float eps) {
+    Bottleneck (int64_t input_channels, int64_t output_channels, bool shortcut, int64_t g, float eps) {
         int64_t hidden = int(output_channels * eps);
 
         conv1 = &Conv(input_channels, hidden, 
@@ -19,12 +19,12 @@ struct Bottleneck : torch::nn::Module {
                     1, 
                     false
                     );
-        conv1 = &Conv(input_channels, hidden, 
+        conv2 = &Conv(input_channels, hidden, 
                     torch::ExpandingArray<2>({3, 3}),
                     torch::ExpandingArray<2>({1, 1}),
                     torch::ExpandingArray<2>({1, 1}),
                     torch::ExpandingArray<2>({1, 1}),
-                    1, 
+                    g, 
                     false
                     );
 
