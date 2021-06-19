@@ -8,7 +8,7 @@ sys.path.append(os.path.dirname(get_tools_dir()))
 
 from tools.filters import register
 file_loader = jinja2.FileSystemLoader('{}/{}'.format(get_tools_dir(), 'templates'))
-from tools.layers_render import Model
+from tools.layers_render import Model, prepare_env
 
 env = jinja2.Environment(loader=file_loader)
 register(env)
@@ -19,10 +19,9 @@ def test_conv():
 
 
 def test_model():
+    prepare_env()
     sys.path.append('/Users/xurui/test/yolov5/venv/lib/python3.7/site-packages')
-    import torch
     sys.path.append('/Users/xurui/test/yolov5')
-    print(sys.path)
     from models.yolo import parse_model
     with open('/Users/xurui/test/yolov5/models/yolov5s.yaml') as f:
         data = yaml.safe_load(f)

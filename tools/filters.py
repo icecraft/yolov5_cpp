@@ -4,10 +4,10 @@ import jinja2
 
 # suppose it is array
 def torch_expanding_array(args):
-    return str(args).replace('[', '{').replace(']', '}')
+    return str(args).replace('(', '{').replace(')', '}')
 
 def cpp_vector_expand(args):
-    return str(args).replace('[', '{').replace(']', '}')
+    return str(args).replace('(', '{').replace(')', '}')
 
 
 def check_add(env, name, func):

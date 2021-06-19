@@ -1,6 +1,12 @@
 
 import os
+import shutil
 
+def prepare_env():
+    fn = os.path.dirname(__file__) + "/templates/workspace"
+    if os.path.exists(fn):
+        shutil.rmtree(fn)
+    os.mkdir(fn)
 
 def get_torch_layer_name(layer):
     return "nn." + layer.type.split(".")[-1]
@@ -16,7 +22,7 @@ def is_yolo_layer(layer):
 class Registry(type):
     entries = {}
     def __init__(cls, name, bases, attrs):
-            Registry.entries[name] = cls
+            Registry.entries[name[1:]] = cls
 
 
 class Rbase(metaclass=Registry):
@@ -28,11 +34,14 @@ class Rbase(metaclass=Registry):
         return cls.count
     
     def get_tpl_name(self):
-        tpl_file_name = "{}.new.tpl".format(self.__class__.__name__[1:])
+        return "{}.new.tpl".format(self.__class__.__name__[1:])
         
     def render(self, env, fobj):
+        print(self.__class__.__name__)
+        
         template = env.get_template(self.get_tpl_name())
-        ret = template.render(**self._render())
+        data = self._render()
+        ret = template.render(**data)
         fobj.write(ret)
         fobj.flush()
         
@@ -52,7 +61,8 @@ class RFocus(Rbase):
         d['padding'] = conv.conv.padding
         d['bias'] = conv.conv.bias
         d['dilation'] = conv.conv.dilation
-        d['group'] = conv.conv.group
+        d['groups'] = conv.conv.groups
+        d['seq'] = RFocus.get_seq()
         return d
         
       
@@ -71,7 +81,8 @@ class RConv(Rbase):
         d['padding'] = conv.conv.padding
         d['bias'] = conv.conv.bias
         d['dilation'] = conv.conv.dilation
-        d['group'] = conv.conv.group
+        d['groups'] = conv.conv.groups
+        d['seq'] = RConv.get_seq()
         return d
 
 
@@ -93,9 +104,10 @@ class RC3(Rbase):
         d['groups'] = conv.conv.groups
     
         d['n'] = len(self.c3.m)
-        d['eps'] = out_channels/in_channels
+        d['eps'] = d['out_channels']/d['in_channels']
         d['shortcut'] = self.c3.m[0].add
         d['groups2'] =  self.c3.m[0].cv2.conv.groups
+        d['seq'] = RC3.get_seq()
         return d
 
 
@@ -114,9 +126,10 @@ class RSPP(Rbase):
         d['padding'] = conv.conv.padding
         d['bias'] = conv.conv.bias
         d['dilation'] = conv.conv.dilation
-        d['group'] = conv.conv.group
+        d['groups'] = conv.conv.groups
         
         d['pool_kernel_size'] = [k.kernel_size for k in self.spp.m]
+        d['seq'] = RSPP.get_seq()
         return d
 
 
@@ -127,6 +140,7 @@ class RConcat(Rbase):
     def _render(self):
         d = {}
         d['dimension'] = self.concat.d 
+        d['seq'] = RConcat.get_seq()
         return d
 
 
@@ -144,7 +158,7 @@ class RDetect(Rbase):
         d['anchor'] = [v.item() for v in self.detect.anchors.view(-1)]
         d['anchor_len'] = len(self.detect.anchors.view(-1))
         d['inplace'] = self.detect.inplace
-        
+        d['seq'] = RDetect.get_seq()
         return d
 
 
@@ -153,13 +167,7 @@ class Model(object):
     def __init__(self, yolo_model):
         self.model = yolo_model
     
-    def _prepare_env(self):
-        if os.pathexists("templates/workspace"):
-            os.remove("templates/workspace")
-        os.mkdir("templates/workspace")
-
     def render(self, env, fobj):
-        self._prepare_env()
         for layer in self.model:
             p_yolo_layer, name = is_yolo_layer(layer)
             if p_yolo_layer:
