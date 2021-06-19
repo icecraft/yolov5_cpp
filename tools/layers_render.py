@@ -173,5 +173,8 @@ class Model(object):
             if p_yolo_layer:
                 instance = Registry.entries[name](layer)
                 instance.render(env, fobj)
+        template = env.get_template('Model.new.tpl')
+        with open('model.test.cpp', 'w') as f:
+            f.write(template.render())
 
 

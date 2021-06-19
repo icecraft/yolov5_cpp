@@ -1,4 +1,15 @@
 
+#include <torch/torch.h>
+#include <cstddef>
+#include <cstdio>
+#include <iostream>
+#include <string>
+#include <vector>
+
+
+struct Model {
+    Model () {   
+        
         focus_1 = Focus(12, 32, 
                               torch::ExpandingArray<2>({3, 3}),
                               torch::ExpandingArray<2>({1, 1}),
@@ -227,3 +238,8 @@
         detect = Detect(80, 3, vector<float>({10.0, 13.0, 16.0, 30.0, 33.0, 23.0, 30.0, 61.0, 62.0, 45.0, 59.0, 119.0, 116.0, 90.0, 156.0, 198.0, 373.0, 326.0}), 18, true);
 
         seq.push_back(detect);
+    }
+    torch::Tensor forward(torch::Tensor x) {
+        return torch::cat(x, dimension_)
+    }
+};

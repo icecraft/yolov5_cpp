@@ -14,7 +14,7 @@ struct SPP : torch::nn::Module {
             torch::ExpandingArray<2> dilation,
             int64_t groups,
             bool bias,
-            vector<int> pool_kernel_size) 
+            vector<float> pool_kernel_size) 
      {
         int64_t hidden = input_channels / 2;
 
