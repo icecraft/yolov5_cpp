@@ -59,7 +59,7 @@ class RFocus(Rbase):
         d['kernel_size'] = conv.conv.kernel_size
         d['stride'] = conv.conv.stride
         d['padding'] = conv.conv.padding
-        d['bias'] = conv.conv.bias
+        d['bias'] = conv.conv.bias 
         d['dilation'] = conv.conv.dilation
         d['groups'] = conv.conv.groups
         d['seq'] = RFocus.get_seq()
