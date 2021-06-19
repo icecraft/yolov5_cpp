@@ -32,7 +32,7 @@ class Rbase(metaclass=Registry):
         
     def render(self, env, fobj):
         template = env.get_template(self.get_tpl_name())
-        ret = template.render(**self._render)
+        ret = template.render(**self._render())
         fobj.write(ret)
         fobj.flush()
         
@@ -55,13 +55,12 @@ class RFocus(Rbase):
         d['group'] = conv.conv.group
         return d
         
-        
-
+      
 class RConv(Rbase):
     def __init__(self, layer):
         self.conv = layer
         
-    def render(self):
+    def _render(self):
         conv = self.conv 
         
         d = {}
@@ -80,7 +79,7 @@ class RC3(Rbase):
     def __init__(self, layer):
         self.c3 = layer
         
-    def render(self):
+    def _render(self):
         conv = self.c3.cv1
         
         d = {}
@@ -104,7 +103,7 @@ class RSPP(Rbase):
     def __init__(self, layer):
         self.spp = layer
     
-    def render(self):
+    def _render(self):
         conv = self.spp.cv1
         d = {}
         
@@ -125,7 +124,7 @@ class RConcat(Rbase):
     def __init__(self, layer):
         self.concat = layer
     
-    def render(self):
+    def _render(self):
         d = {}
         d['dimension'] = self.concat.d 
         return d
@@ -135,7 +134,7 @@ class RDetect(Rbase):
     def __init__(self, layer):
         self.detect = layer
         
-    def render(self):
+    def _render(self):
         d = {}
         
         d['nc'] = self.detect.nc
@@ -159,12 +158,12 @@ class Model(object):
             os.remove("templates/workspace")
         os.mkdir("templates/workspace")
 
-    def render(self):
+    def render(self, env, fobj):
         self._prepare_env()
         for layer in self.model:
             p_yolo_layer, name = is_yolo_layer(layer)
             if p_yolo_layer:
                 instance = Registry.entries[name](layer)
-                instance.render()
+                instance.render(env, fobj)
 
 
