@@ -1,3 +1,6 @@
+#ifndef _YOLOV5_CPP_CONCAT_H
+#define _YOLOV5_CPP_CONCAT_H
+
 
 #include <torch/torch.h>
 #include <cstddef>
@@ -18,3 +21,5 @@ struct Concat : torch::nn::Module {
 
     int dimension_;
 };
+
+#endif

@@ -1,3 +1,6 @@
+#ifndef _YOLOV5_CPP_DETECT_H
+#define _YOLOV5_CPP_DETECT_H
+
 
 #include <torch/torch.h>
 #include <cstddef>
@@ -51,3 +54,4 @@ struct Detect : torch::nn::Module {
 };
 
 
+#endif

@@ -1,4 +1,5 @@
-
+#ifndef _YOLOV5_CPP_CONV_H
+#define _YOLOV5_CPP_CONV_H
 
 #include <torch/torch.h>
 #include <cstddef>
@@ -49,3 +50,5 @@ struct Conv : torch::nn::Module {
     torch::nn::SiLU silu1 = NULL:
     torch::nn::Identity id1 = NULL;
 };
+
+#endif

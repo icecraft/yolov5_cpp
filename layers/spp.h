@@ -1,3 +1,6 @@
+#ifndef _YOLOV5_CPP_SPP_H
+#define _YOLOV5_CPP_SPP_H
+
 
 #include <torch/torch.h>
 #include <cstddef>
@@ -50,3 +53,5 @@ struct SPP : torch::nn::Module {
     Conv conv2 = NULL;
     torch::nn::ModuleList m1 = NULL;
 };
+
+#endif

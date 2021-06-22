@@ -9,7 +9,6 @@
 
 struct Model {
     Model () {   
-        
         focus_1 = Focus(12, 32, 
                               torch::ExpandingArray<2>({3, 3}),
                               torch::ExpandingArray<2>({1, 1}),

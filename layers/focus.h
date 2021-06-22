@@ -1,4 +1,5 @@
-
+#ifndef _YOLOV5_CPP_FOCUS_H
+#define _YOLOV5_CPP_FOCUS_H
 
 #include <torch/torch.h>
 #include <cstddef>
@@ -30,3 +31,5 @@ struct Focus : torch::nn::Module {
 
     torch::nn::Conv2d conv1 = NULL;
 };
+
+#endif

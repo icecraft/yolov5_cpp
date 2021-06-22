@@ -1,3 +1,6 @@
+#ifndef _YOLOV5_CPP_BOTTLENECK_H
+#define _YOLOV5_CPP_BOTTLENECK_H
+
 
 #include <torch/torch.h>
 #include <cstddef>
@@ -55,3 +58,5 @@ struct Bottleneck : torch::nn::Module {
     Conv conv2 = NULL;
     bool pAdd = false;
 };
+
+#endif

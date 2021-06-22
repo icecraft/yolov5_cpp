@@ -9,9 +9,12 @@
 
 struct Model {
     Model () {   
+    seq = torch::nn::Sequential{};
         {% include 'workspace/models.cpp.tpl' %}
     }
     torch::Tensor forward(torch::Tensor x) {
         return torch::cat(x, dimension_)
     }
+
+    torch::nn::Sequential seq = NULL;
 };

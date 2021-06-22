@@ -1,4 +1,7 @@
 
+#ifndef _YOLOV5_CPP_C3_H
+#define _YOLOV5_CPP_C3_H
+
 #include <torch/torch.h>
 #include <cstddef>
 #include <cstdio>
@@ -49,3 +52,5 @@ struct C3 : torch::nn::Module {
     Conv conv3 = NULL;
     torch::nn::Sequential seq1 = NULL;
 };
+
+#endif
