@@ -29,7 +29,7 @@ struct Focus : torch::nn::Module {
         return x;
     }
 
-    torch::nn::Conv2d conv1 = NULL;
+    Conv conv1 = NULL;
 };
 
 #endif

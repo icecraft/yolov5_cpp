@@ -1,6 +1,7 @@
 #ifndef _YOLOV5_CPP_BOTTLENECK_H
 #define _YOLOV5_CPP_BOTTLENECK_H
 
+# include "conv.h"
 
 #include <torch/torch.h>
 #include <cstddef>
@@ -42,7 +43,7 @@ struct Bottleneck : torch::nn::Module {
 
     // 假定只有 3 个，必要时手动修改吧
     torch::Tensor forward(torch::Tensor x) {
-        if pAdd {
+        if (pAdd) {
             torch::Tensor x_ = torch::clone(x);
             x = conv1->forward(x);
             x = conv2->forward(x);
@@ -54,8 +55,8 @@ struct Bottleneck : torch::nn::Module {
         }
     }
 
-    Conv conv1 = NULL;
-    Conv conv2 = NULL;
+    Conv *conv1 = NULL;
+    Conv *conv2 = NULL;
     bool pAdd = false;
 };
 

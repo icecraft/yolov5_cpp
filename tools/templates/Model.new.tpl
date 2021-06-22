@@ -6,6 +6,7 @@
 #include <string>
 #include <vector>
 
+{% include 'layers.cpp.headers.tpl' %}
 
 struct Model {
     Model () {   
@@ -18,3 +19,8 @@ struct Model {
 
     torch::nn::Sequential seq = NULL;
 };
+
+
+auto main() -> int {
+    std::cout << "hello world!" << std::endl;
+}

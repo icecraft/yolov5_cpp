@@ -16,7 +16,7 @@ struct Concat : torch::nn::Module {
     }
 
     torch::Tensor forward(torch::Tensor x) {
-        return torch::cat(x, dimension_)
+        return torch::cat(x, dimension_);
     }
 
     int dimension_;

@@ -12,4 +12,4 @@
                           {{ eps }}
                             );
                             
-        seq.push_back(c3_{{seq}});
+        seq->push_back(c3_{{seq}});

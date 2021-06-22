@@ -8,4 +8,4 @@
                           {{ bias | bool }}
                             );
                             
-        seq.push_back(conv_{{seq}});
+        seq->push_back(conv_{{seq}});

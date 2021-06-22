@@ -28,7 +28,7 @@ struct SPP : torch::nn::Module {
 
         for (auto x: pool_kernel_size) {
             pool = torch::nn::MaxPool2dOptions(x).stride(1).padding(x/2);
-            m1.push_back(pool);
+            m1->push_back(pool);
         }
 
         register_module("conv1", conv1);

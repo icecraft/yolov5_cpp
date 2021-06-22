@@ -9,4 +9,4 @@
                     vector<int>({{ pool_kernel_size | cpp_vector_expand }})
                     );
 
-        seq.push_back(spp_{{seq}});
+        seq->push_back(spp_{{seq}});

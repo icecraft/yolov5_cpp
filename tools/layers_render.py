@@ -37,7 +37,7 @@ class Rbase(metaclass=Registry):
         return "{}.new.tpl".format(self.__class__.__name__[1:])
         
     def render(self, env, fobj):
-        print(self.__class__.__name__)
+        # print(self.__class__.__name__)
         
         template = env.get_template(self.get_tpl_name())
         data = self._render()
