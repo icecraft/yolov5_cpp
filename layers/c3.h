@@ -23,9 +23,9 @@ struct C3 : torch::nn::Module {
         int n, bool shortcut, int64_t groups2, float eps) {
         int64_t hidden = int(output_channels * eps);
 
-        conv1 = &Conv(input_channels, hidden, kernel_size, stride, padding, dilation, groups, bias);
-        conv2 = &Conv(input_channels, hidden, kernel_size, stride, padding, dilation, groups, bias);
-        conv3 = &Conv(2 * hidden, output_channels, kernel_size, stride, padding, dilation, groups, bias);
+        conv1 = std::make_shared<Conv>(input_channels, hidden, kernel_size, stride, padding, dilation, groups, bias);
+        conv2 = std::make_shared<Conv>(input_channels, hidden, kernel_size, stride, padding, dilation, groups, bias);
+        conv3 = std::make_shared<Conv>(2 * hidden, output_channels, kernel_size, stride, padding, dilation, groups, bias);
 
         seq1 = torch::nn::Sequential{};
 
@@ -49,9 +49,9 @@ struct C3 : torch::nn::Module {
         return x;
     }
 
-    Conv conv1 = NULL;
-    Conv conv2 = NULL;
-    Conv conv3 = NULL;
+    std::shared_ptr<Conv> conv1 = NULL;
+    std::shared_ptr<Conv> conv2 = NULL;
+    std::shared_ptr<Conv> conv3 = NULL;
     torch::nn::Sequential seq1 = NULL;
 };
 

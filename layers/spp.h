@@ -17,12 +17,12 @@ struct SPP : torch::nn::Module {
             torch::ExpandingArray<2> dilation,
             int64_t groups,
             bool bias,
-            vector<float> pool_kernel_size) 
+            std::vector<float> pool_kernel_size) 
      {
         int64_t hidden = input_channels / 2;
 
-        conv1 = &Conv(input_channels, hidden, kernel_size, stride, padding, dilation, groups, bias);
-        conv2 = &Conv((kernel_nums+1)*hidden, output_channels, kernel_size, stride, padding, dilation, groups, bias);
+        conv1 = std::make_shared<Conv>(input_channels, hidden, kernel_size, stride, padding, dilation, groups, bias);
+        conv2 = std::make_shared<Conv>((pool_kernel_size.size()+1)*hidden, output_channels, kernel_size, stride, padding, dilation, groups, bias);
 
         m1 = torch::nn::ModuleList();
 
@@ -39,7 +39,7 @@ struct SPP : torch::nn::Module {
     //TODO: 假定只有 3 个，必要时手动修改吧。 more elegant
     torch::Tensor forward(torch::Tensor x) {
         x = conv1->forward(x);
-        vector<torch::Tensor> arr;
+        std::vector<torch::Tensor> arr;
 
         for (auto proc : m1) {
             arr.push_back(proc->forward(x));
@@ -49,8 +49,8 @@ struct SPP : torch::nn::Module {
         return x;
     }
 
-    Conv conv1 = NULL;
-    Conv conv2 = NULL;
+    std::shared_ptr<Conv> conv1 = NULL;
+    std::shared_ptr<Conv> conv2 = NULL;
     torch::nn::ModuleList m1 = NULL;
 };
 

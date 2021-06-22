@@ -10,7 +10,7 @@
 #include <vector>
 
 struct Detect : torch::nn::Module {
-    Detect(int nc, int nl, int anchor[], int anchor_len,  bool inplace) {
+    Detect(int nc, int nl, std::vector<float> anchor, int anchor_len,  bool inplace) {
         nc_ = nc;
         no_ = nc + 5;
         nl_ = nl;
@@ -23,9 +23,9 @@ struct Detect : torch::nn::Module {
         register_buffer("anchor_grid", a.clone().view({nl_, 1, -1, 1, 1, 2}));
 
         m1 = torch::nn::ModuleList();
-        torch::nn::Conv2d conv1 = torch::nn::Conv2d(torch::nn::Conv2dOptions(128, 255, 1, 1).stride(1, 1);
-        torch::nn::Conv2d conv2 = torch::nn::Conv2d(torch::nn::Conv2dOptions(256, 255, 1, 1).stride(1, 1);
-        torch::nn::Conv2d conv3 = torch::nn::Conv2d(torch::nn::Conv2dOptions(512, 255, 1, 1).stride(1, 1);
+        torch::nn::Conv2d conv1 = torch::nn::Conv2d(torch::nn::Conv2dOptions(128, 255, 1, 1).stride(1, 1));
+        torch::nn::Conv2d conv2 = torch::nn::Conv2d(torch::nn::Conv2dOptions(256, 255, 1, 1).stride(1, 1));
+        torch::nn::Conv2d conv3 = torch::nn::Conv2d(torch::nn::Conv2dOptions(512, 255, 1, 1).stride(1, 1));
         m1->push_back(conv1);
         m1->push_back(conv2);
         m1->push_back(conv3);

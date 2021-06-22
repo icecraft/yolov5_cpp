@@ -15,7 +15,7 @@ struct Bottleneck : torch::nn::Module {
     Bottleneck (int64_t input_channels, int64_t output_channels, bool shortcut, int64_t g, float eps) {
         int64_t hidden = int(output_channels * eps);
 
-        conv1 = &Conv(input_channels, hidden, 
+        conv1 = std::make_shared<Conv>(input_channels, hidden, 
                     torch::ExpandingArray<2>({1, 1}),
                     torch::ExpandingArray<2>({1, 1}),
                     torch::ExpandingArray<2>({0, 0}),
@@ -23,7 +23,7 @@ struct Bottleneck : torch::nn::Module {
                     1, 
                     false
                     );
-        conv2 = &Conv(input_channels, hidden, 
+        conv2 = std::make_shared<Conv>(input_channels, hidden, 
                     torch::ExpandingArray<2>({3, 3}),
                     torch::ExpandingArray<2>({1, 1}),
                     torch::ExpandingArray<2>({1, 1}),
@@ -55,8 +55,8 @@ struct Bottleneck : torch::nn::Module {
         }
     }
 
-    Conv *conv1 = NULL;
-    Conv *conv2 = NULL;
+    std::shared_ptr<Conv> conv1 = NULL;
+    std::shared_ptr<Conv> conv2 = NULL;
     bool pAdd = false;
 };
 

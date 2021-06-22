@@ -1,5 +1,5 @@
 
-        c3_{{seq}} = C3({{in_channels}}, {{out_channels}}, 
+        std::shared_ptr<C3> c3_{{seq}} = std::make_shared<C3>({{in_channels}}, {{out_channels}}, 
                           torch::ExpandingArray<2>({{ kernel_size | torch_expanding_array }}),
                           torch::ExpandingArray<2>({{ stride | torch_expanding_array }}),
                           torch::ExpandingArray<2>({{ padding | torch_expanding_array }}),
