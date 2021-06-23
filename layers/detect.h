@@ -23,26 +23,22 @@ struct Detect : torch::nn::Module {
         register_buffer("anchors", a);
         register_buffer("anchor_grid", a.clone().view({nl_, 1, -1, 1, 1, 2}));
 
-        m1 = torch::nn::ModuleList();
-        torch::nn::Conv2d conv1 = torch::nn::Conv2d(torch::nn::Conv2dOptions(128, 255, 1, 1).stride(1, 1));
-        torch::nn::Conv2d conv2 = torch::nn::Conv2d(torch::nn::Conv2dOptions(256, 255, 1, 1).stride(1, 1));
-        torch::nn::Conv2d conv3 = torch::nn::Conv2d(torch::nn::Conv2dOptions(512, 255, 1, 1).stride(1, 1));
-        m1->push_back(conv1);
-        m1->push_back(conv2);
-        m1->push_back(conv3);
-        register_module("m1", m1);
+
+        torch::nn::Conv2d conv1 = torch::nn::Conv2d(torch::nn::Conv2dOptions(128, 255, torch::ExpandingArray<2>({1, 1})).stride(torch::ExpandingArray<2>({1, 1})));
+        torch::nn::Conv2d conv2 = torch::nn::Conv2d(torch::nn::Conv2dOptions(256, 255, torch::ExpandingArray<2>({1, 1})).stride(torch::ExpandingArray<2>({1, 1})));
+        torch::nn::Conv2d conv3 = torch::nn::Conv2d(torch::nn::Conv2dOptions(512, 255, torch::ExpandingArray<2>({1, 1})).stride(torch::ExpandingArray<2>({1, 1})));
+        register_module("conv1", conv1);
+        register_module("conv2", conv2);
+        register_module("conv3", conv3);
         inplace_ = inplace;
     }
     
     torch::Tensor forward(torch::Tensor x) {
-        int i = 0;
-        for (auto proc : m1) {
-            x[i] = proc->forward(x[i]);
-            auto sharp = x[i].shape();
-            x[i] = x[i].view(sharp[0], na_, no_, sharp[2], sharp[3]).permute({0, 1, 3, 4, 2}).contiguous();
-            i ++;
-        }
-       return x;
+        x[0] = conv1->forward(x[0]);
+        auto sharp = x[i].shape();
+        x[i] = x[i].view(sharp[0], na_, no_, sharp[2], sharp[3]).permute({0, 1, 3, 4, 2}).contiguous();
+
+        return x;
     }
 
     int nc_;
@@ -52,6 +48,10 @@ struct Detect : torch::nn::Module {
     std::vector<torch::Tensor> grid;
     torch::nn::ModuleList m1 = NULL;
     bool inplace_ = false;
+    
+    torch::nn::Conv2d conv1 = NULL;
+    torch::nn::Conv2d conv2 = NULL;
+    torch::nn::Conv2d conv3 = NULL;
 };
 
 

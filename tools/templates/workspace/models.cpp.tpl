@@ -98,7 +98,7 @@
                     torch::ExpandingArray<2>({1, 1}),
                     1,
                     false,
-                    std::vector<float>({5, 9, 13})
+                    std::vector<int>({5, 9, 13})
                     );
 
         seq->push_back(spp_1);

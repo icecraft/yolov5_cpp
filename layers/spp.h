@@ -17,7 +17,7 @@ struct SPP : torch::nn::Module {
             torch::ExpandingArray<2> dilation,
             int64_t groups,
             bool bias,
-            std::vector<float> pool_kernel_size) 
+            std::vector<int> pool_kernel_size) 
      {
         int64_t hidden = input_channels / 2;
 
@@ -26,13 +26,15 @@ struct SPP : torch::nn::Module {
 
         m1 = torch::nn::ModuleList();
 
-       for (const auto x: pool_kernel_size) {
-            auto pool = torch::nn::MaxPool2dOptions(x).stride(1).padding(x/2);
-            m1->push_back(pool);
-        }
+        conv2d1 = torch::nn::Conv2d(torch::nn::MaxPool2dOptions(pool_kernel_size[0])).stride(1).padding(pool_kernel_size[0]/2);
+        conv2d2 = torch::nn::MaxPool2dOptions(pool_kernel_size[1]).stride(1).padding(pool_kernel_size[1]/2);
+        conv2d3 = torch::nn::MaxPool2dOptions(pool_kernel_size[1]).stride(1).padding(pool_kernel_size[1]/2);
 
         register_module("conv1", conv1);
         register_module("conv2", conv2);
+        register_module("conv2d1", conv2d1);
+        register_module("conv2d2", conv2d2);
+        register_module("conv2d3", conv2d3);
         register_module("m1", m1);
     }
 
@@ -51,7 +53,10 @@ struct SPP : torch::nn::Module {
 
     std::shared_ptr<Conv> conv1 = NULL;
     std::shared_ptr<Conv> conv2 = NULL;
-    torch::nn::ModuleList m1 = NULL;
+
+    torch::nn::Conv2d conv2d1 = NULL;
+    torch::nn::Conv2d conv2d2 = NULL;
+    torch::nn::Conv2d conv2d3 = NULL;
 };
 
 #endif

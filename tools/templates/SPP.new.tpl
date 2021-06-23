@@ -6,7 +6,7 @@
                     torch::ExpandingArray<2>({{ dilation | torch_expanding_array }}),
                     {{ groups }},
                     {{ bias | bool}},
-                    std::vector<float>({{ pool_kernel_size | cpp_vector_expand }})
+                    std::vector<int>({{ pool_kernel_size | cpp_vector_expand }})
                     );
 
         seq->push_back(spp_{{seq}});
