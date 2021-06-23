@@ -24,18 +24,15 @@ struct SPP : torch::nn::Module {
         conv1 = std::make_shared<Conv>(input_channels, hidden, kernel_size, stride, padding, dilation, groups, bias);
         conv2 = std::make_shared<Conv>((pool_kernel_size.size()+1)*hidden, output_channels, kernel_size, stride, padding, dilation, groups, bias);
 
-        m1 = torch::nn::ModuleList();
-
-        conv2d1 = torch::nn::Conv2d(torch::nn::MaxPool2dOptions(pool_kernel_size[0])).stride(1).padding(pool_kernel_size[0]/2);
-        conv2d2 = torch::nn::MaxPool2dOptions(pool_kernel_size[1]).stride(1).padding(pool_kernel_size[1]/2);
-        conv2d3 = torch::nn::MaxPool2dOptions(pool_kernel_size[1]).stride(1).padding(pool_kernel_size[1]/2);
+        pool1 = torch::nn::MaxPool2d(torch::nn::MaxPool2dOptions(pool_kernel_size[0]).stride(1).padding(pool_kernel_size[0]/2));
+        pool2 = torch::nn::MaxPool2d(torch::nn::MaxPool2dOptions(pool_kernel_size[1]).stride(1).padding(pool_kernel_size[1]/2));
+        pool3 = torch::nn::MaxPool2d(torch::nn::MaxPool2dOptions(pool_kernel_size[2]).stride(1).padding(pool_kernel_size[2]/2));
 
         register_module("conv1", conv1);
         register_module("conv2", conv2);
-        register_module("conv2d1", conv2d1);
-        register_module("conv2d2", conv2d2);
-        register_module("conv2d3", conv2d3);
-        register_module("m1", m1);
+        register_module("pool1", pool1);
+        register_module("pool2", pool2);
+        register_module("pool3", pool3);
     }
 
     //TODO: 假定只有 3 个，必要时手动修改吧。 more elegant
@@ -43,9 +40,10 @@ struct SPP : torch::nn::Module {
         x = conv1->forward(x);
         std::vector<torch::Tensor> arr;
 
-      for (const auto &proc : *m1) {
-            arr.push_back(proc->as<torch::nn::MaxPool2dOptions>()(x));
-        }
+        arr.push_back(pool1->forward(x));
+        arr.push_back(pool2->forward(x));
+        arr.push_back(pool3->forward(x));
+
         x = torch::cat({x, arr[0], arr[1], arr[2]}, 1);
         x = conv2->forward(x);
         return x;
@@ -54,9 +52,9 @@ struct SPP : torch::nn::Module {
     std::shared_ptr<Conv> conv1 = NULL;
     std::shared_ptr<Conv> conv2 = NULL;
 
-    torch::nn::Conv2d conv2d1 = NULL;
-    torch::nn::Conv2d conv2d2 = NULL;
-    torch::nn::Conv2d conv2d3 = NULL;
+    torch::nn::MaxPool2d pool1 = NULL;
+    torch::nn::MaxPool2d pool2 = NULL;
+    torch::nn::MaxPool2d pool3 = NULL;
 };
 
 #endif

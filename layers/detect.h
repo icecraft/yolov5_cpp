@@ -35,8 +35,16 @@ struct Detect : torch::nn::Module {
     
     torch::Tensor forward(torch::Tensor x) {
         x[0] = conv1->forward(x[0]);
-        auto sharp = x[i].shape();
-        x[i] = x[i].view(sharp[0], na_, no_, sharp[2], sharp[3]).permute({0, 1, 3, 4, 2}).contiguous();
+        auto sharp = x[0].sizes();
+        x[0] = x[0].view({sharp[0], na_, no_, sharp[2], sharp[3]}).permute({0, 1, 3, 4, 2}).contiguous();
+
+        x[1] = conv2->forward(x[1]);
+        auto sharp2 = x[1].sizes();
+        x[1] = x[1].view({sharp2[0], na_, no_, sharp2[2], sharp2[3]}).permute({0, 1, 3, 4, 2}).contiguous();
+
+        x[2] = conv3->forward(x[2]);
+        auto sharp3 = x[2].sizes();
+        x[2] = x[2].view({sharp3[0], na_, no_, sharp3[2], sharp3[3]}).permute({0, 1, 3, 4, 2}).contiguous();
 
         return x;
     }
