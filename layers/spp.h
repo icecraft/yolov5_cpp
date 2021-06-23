@@ -26,8 +26,8 @@ struct SPP : torch::nn::Module {
 
         m1 = torch::nn::ModuleList();
 
-        for (auto x: pool_kernel_size) {
-            pool = torch::nn::MaxPool2dOptions(x).stride(1).padding(x/2);
+       for (const auto x: pool_kernel_size) {
+            auto pool = torch::nn::MaxPool2dOptions(x).stride(1).padding(x/2);
             m1->push_back(pool);
         }
 
@@ -41,8 +41,8 @@ struct SPP : torch::nn::Module {
         x = conv1->forward(x);
         std::vector<torch::Tensor> arr;
 
-        for (auto proc : m1) {
-            arr.push_back(proc->forward(x));
+      for (const auto &proc : *m1) {
+            arr.push_back(proc->as<torch::nn::MaxPool2dOptions>()(x));
         }
         x = torch::cat({x, arr[0], arr[1], arr[2]}, 1);
         x = conv2->forward(x);

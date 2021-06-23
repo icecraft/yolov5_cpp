@@ -10,15 +10,16 @@
 #include <vector>
 
 struct Detect : torch::nn::Module {
-    Detect(int nc, int nl, std::vector<float> anchor, int anchor_len,  bool inplace) {
+    Detect(int nc, int nl, float anchor[], int anchor_len,  bool inplace) {
         nc_ = nc;
         no_ = nc + 5;
         nl_ = nl;
         na_ = 3;  // 写死的
         for ( int i =0; i < nl; i++) {
-            grid.push_back(torch::zeors(1));
+            grid.push_back(torch::zeros(1));
         }
-        auto a = torch::from_blob(anchor,{anchor_len},torch::kFloat32).view({nl_, -1, 2});
+        auto options = torch::TensorOptions().dtype(torch::kFloat32);
+        auto a = torch::from_blob(anchor, {anchor_len}, options).view({nl_, -1, 2});
         register_buffer("anchors", a);
         register_buffer("anchor_grid", a.clone().view({nl_, 1, -1, 1, 1, 2}));
 
