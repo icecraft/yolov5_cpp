@@ -8,13 +8,16 @@
 #include <iostream>
 #include <string>
 #include <vector>
+#include <assert.h>
 
 struct Detect : torch::nn::Module {
     Detect(int nc, int nl, float anchor[], int anchor_len,  bool inplace) {
         nc_ = nc;
         no_ = nc + 5;
         nl_ = nl;
-        na_ = 3;  // 写死的
+        na_ = 3;
+
+        assert(18 == anchor_len); //确保 anchor 有 3 组，每组有 6 个变量
         for ( int i =0; i < nl; i++) {
             grid.push_back(torch::zeros(1));
         }
@@ -47,6 +50,19 @@ struct Detect : torch::nn::Module {
         x[2] = x[2].view({sharp3[0], na_, no_, sharp3[2], sharp3[3]}).permute({0, 1, 3, 4, 2}).contiguous();
 
         return x;
+    }
+
+   
+    static torch::Tensor _make_grid(int nx, int ny) {
+        /*
+        yv, xv = torch.meshgrid([torch.arange(ny), torch.arange(nx)])
+        return torch.stack((xv, yv), 2).view((1, 1, ny, nx, 2)).float()
+        */
+        std::vector<torch::Tensor> args = torch::meshgrid({torch::arange(ny), torch::arange(nx)});
+        auto yv = args[0];
+        auto xv = args[1];
+        return torch::stack({xv, yv},2).view({1, 1, ny, nx, 2});
+
     }
 
     int nc_;

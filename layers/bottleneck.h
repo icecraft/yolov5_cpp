@@ -13,7 +13,7 @@
 
 struct Bottleneck : torch::nn::Module {
     Bottleneck (int64_t input_channels, int64_t output_channels, bool shortcut, int64_t g, float eps) {
-        int64_t hidden = int(output_channels * eps);
+        int64_t hidden = int64_t(output_channels * eps);
 
         conv1 = std::make_shared<Conv>(input_channels, hidden, 
                     torch::ExpandingArray<2>({1, 1}),

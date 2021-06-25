@@ -2,12 +2,13 @@
 #define _YOLOV5_CPP_SPP_H
 
 
-#include <torch/torch.h>
-#include <cstddef>
-#include <cstdio>
-#include <iostream>
-#include <string>
-#include <vector>
+# include <torch/torch.h>
+# include <cstddef>
+# include <cstdio>
+# include <iostream>
+# include <string>
+# include <vector>
+# include <assert.h>
 
 struct SPP : torch::nn::Module {
     SPP (int64_t input_channels, int64_t output_channels,
@@ -23,6 +24,8 @@ struct SPP : torch::nn::Module {
 
         conv1 = std::make_shared<Conv>(input_channels, hidden, kernel_size, stride, padding, dilation, groups, bias);
         conv2 = std::make_shared<Conv>((pool_kernel_size.size()+1)*hidden, output_channels, kernel_size, stride, padding, dilation, groups, bias);
+
+        assert(3 == pool_kernel_size.size());
 
         pool1 = torch::nn::MaxPool2d(torch::nn::MaxPool2dOptions(pool_kernel_size[0]).stride(1).padding(pool_kernel_size[0]/2));
         pool2 = torch::nn::MaxPool2d(torch::nn::MaxPool2dOptions(pool_kernel_size[1]).stride(1).padding(pool_kernel_size[1]/2));

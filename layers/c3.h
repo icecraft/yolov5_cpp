@@ -21,7 +21,7 @@ struct C3 : torch::nn::Module {
         int64_t groups,
         bool bias,
         int n, bool shortcut, int64_t groups2, float eps) {
-        int64_t hidden = int(output_channels * eps);
+        int64_t hidden = int64_t(output_channels * eps);
 
         conv1 = std::make_shared<Conv>(input_channels, hidden, kernel_size, stride, padding, dilation, groups, bias);
         conv2 = std::make_shared<Conv>(input_channels, hidden, kernel_size, stride, padding, dilation, groups, bias);
@@ -41,11 +41,10 @@ struct C3 : torch::nn::Module {
     }
 
     torch::Tensor forward(torch::Tensor x) {
-        //       return self.cv3(torch.cat((self.m(self.cv1(x)), self.cv2(x)), dim=1))
         torch::Tensor x1 = seq1->forward(conv1->forward(x));
         torch::Tensor x2 = conv2->forward(x);
         torch::Tensor x3 = torch::cat({x1, x2} , 1);
-        x = conv3->forward(x);
+        x = conv3->forward(x3);
         return x;
     }
 
